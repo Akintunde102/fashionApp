@@ -42,7 +42,6 @@ const Gallery = ({
   });
 
   useEffect(() => {
-    smartLog('Blinked');
     setImages(imageDetails.images);
     processPresentImage(0, imageDetails.images);
   }, [imageDetails]);
@@ -52,7 +51,7 @@ const Gallery = ({
       fontSize: 40 / fontScale,
     },
     image: {
-      height: dHeight * 0.73,
+      height: dHeight * 0.76,
       width: dWidth * 0.9,
       alignSelf: 'center',
     },
@@ -75,7 +74,7 @@ const Gallery = ({
     },
     buttonText: {
       color: 'white',
-      fontSize: 18 / fontScale,
+      fontSize: 16 / fontScale,
     },
     buttons: {
       flexDirection: 'row',
@@ -172,7 +171,7 @@ const Gallery = ({
   const onPress = (direction: 'next' | 'previous') => {
     const newIndex =
       direction === 'next' ? presentImage.index + 1 : presentImage.index - 1;
-    console.log({newIndex, length: images.length});
+    smartLog({newIndex, length: images.length});
     if (newIndex === images.length) {
       setImages(onlyImages);
       return;

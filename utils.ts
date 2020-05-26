@@ -9,6 +9,10 @@ export const smartLog = (...data) => {
   config.log && console.log(...data);
 };
 
+export const topLog = (...data) => {
+  config.topLog && console.log('topLog::', ...data);
+};
+
 export const RequestCameraPermission = async () => {
   let fullyGranted = false;
   try {
@@ -353,12 +357,12 @@ export async function fetchAndSave() {
     }
     await keyStorage('allStored', 'true').set();
   } catch (error) {
-    console.log('scan file error', { error });
+    smartLog('scan file error', {error});
   }
 }
 
 export async function getImages() {
-  smartLog(`getImages`);
+  smartLog('getImages');
   const dictStored = await keyStorage('dictStored', '', true).get();
   if (!dictStored) {
     Alert.alert('Data Error', 'Dict Does not Exist yet');

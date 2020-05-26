@@ -22,6 +22,7 @@ import {
   smartLog,
   saveDict,
   useInterval,
+  topLog,
 } from './utils';
 
 type ImageDictType = {
@@ -41,6 +42,7 @@ function App() {
   const [presentPage, setPresentPage] = useState<string>(
     'Naija Fashion Styles',
   );
+  const [allStored, setAllStored] = useState<boolean>(false);
   // To Hide Splash Screen when JS is done loading
   useEffect(() => {
     SplashScreen.hide();
@@ -50,59 +52,98 @@ function App() {
     () => {
       NetInfo.fetch().then((internet) => {
         smartLog({internet});
-        setInternetState(internet.isInternetReachable);
+        setInternetState(!!internet.isInternetReachable);
       });
     },
     internetState ? null : 1000,
   );
+
+  useEffect(() => {
+    keyStorage('allStored')
+      .get()
+      .then((value: string | null | undefined) => {
+        setAllStored(!!value);
+      });
+  });
 
   // to get Image Dict
   useEffect(() => {
     async function prepareStorage() {
       const allCleared = await AndroidFileStorage().clear();
       const keyStorageClear = await keyStorage().clear();
-      console.log({allCleared, keyStorageClear});
+      topLog({
+        allCleared: allCleared && 'All File Storage is Getting Cleared',
+        keyStorageClear:
+          keyStorageClear && 'All Key Storage is Getting Cleared',
+      });
 
       keyStorage('dictStored')
         .get()
         .then(async (dictStored) => {
-          let dict = dictStored;
-          const allStored = await keyStorage('allStored').get();
-          smartLog({allStored, jey: 1, dictStored: dict});
-          if (dictStored && allStored) {
-            return;
+          const savedDict = await AndroidFileStorage('savedDict').get();
+          // smartLog({allStored, dictStored, savedDict});
+
+          /***
+           *   1: Initialise Saved Images Dict
+           *  2: Store All Images Dict, And Start App
+           *  3: Start Saving Local Versions Asynchonously
+           */
+
+          // * 1:  Initialise Saved Images Dict
+          // check if SavedImages Dict does not exist, then Create (Initialize)
+          if (!savedDict) {
+            topLog('Saved Images is Being Initialized');
+            await AndroidFileStorage('savedDict', 'init').set();
           }
 
-          if (!dictStored) {
-            dict = await saveDict();
+          // *  2: Store All Images Dict, And Start App
 
+          // Check if Dict is Stored
+          if (dictStored) {
+            topLog('All Images Dict Already Saved');
+            topLog('ALL Images Dict  is Getting Attached to DOM');
+            setImageDict({images: JSON.parse(dictStored), type: 'allImages'});
+            setReady(true);
+          }
+          // if not, Fetch And Store And Start App
+          if (!dictStored) {
+            const dict = await saveDict();
             if (dict) {
+              topLog(
+                'All Images Dict Got Created',
+                'ALL Images Dict  is Getting Attached to DOM',
+              );
               setImageDict({images: dict, type: 'allImages'});
             }
 
             if (!dict) {
+              topLog('All Images Dict Was Not Saved');
               Alert.alert('Something Bad happened');
             }
-            // initialise Saved Images Dict
-            const savedImagesDict = await AndroidFileStorage(
-              'savedDict',
-              'init',
-            ).set();
-            smartLog({savedImagesDict});
-            setReady(true);
+            setReady(true); // App Starts
           }
+
+          // *  3: Start Saving Local Versions Asynchonously
+
+          if (allStored) {
+            topLog('All Images Are Stored Locally');
+          }
+
+          // check if All Images Are Not Stored, if not, start saving
           if (!allStored) {
             fetchAndSave();
-            smartLog('fetching, saving');
+            topLog('All Images Are being fetched and Saved Asynchronously');
           }
-          return dict;
         })
         .catch((error) => {
-          smartLog('dictStored, allStored check error', error);
+          topLog('dictStored, allStored check error', error);
         });
     }
-    prepareStorage();
-  }, []);
+
+    topLog('InternetState:', internetState !== null && internetState === true);
+    // If Internet is On, Run Operation, if Not , Hold On
+    internetState !== null && internetState === true && prepareStorage();
+  }, [internetState, allStored]);
 
   const styles = StyleSheet.create({
     app: {
@@ -190,7 +231,7 @@ function App() {
 
         smartLog({a: savedDict, b: JSON.parse(savedDict)});
 
-        const parsedDict =  JSON.parse(savedDict);
+        const parsedDict = JSON.parse(savedDict);
         if (parsedDict.length === 0) {
           // Send Out A Feedback toast
           ToastAndroid.showWithGravity(
@@ -251,7 +292,11 @@ function App() {
               ) : (
                 <View style={styles.loader}>
                   <Text style={styles.loadingText}>
-                    <Text style={{marginBottom: 10, fontStyle: 'italic'}}> Images Loading </Text> Please Make Sure Your Internet is On
+                    <Text style={{marginBottom: 10, fontStyle: 'italic'}}>
+                      {' '}
+                      Images Loading{' '}
+                    </Text>{' '}
+                    Please Make Sure Your Internet is On
                   </Text>
                   {internetState !== null && internetState === false && (
                     <Text

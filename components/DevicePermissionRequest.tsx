@@ -1,5 +1,6 @@
 import React from 'react';
 import {PermissionsAndroid} from 'react-native';
+import {smartLog} from '../utils';
 
 const RequestCameraPermission = async () => {
   try {
@@ -17,9 +18,9 @@ const RequestCameraPermission = async () => {
     );
 
     if (fileReadAccess === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('You can read storage');
+      smartLog('You can read storage');
     } else {
-      console.log('Not Allowed');
+      smartLog('Not Allowed');
     }
 
     const fileWriteAccess = await PermissionsAndroid.request(
@@ -36,9 +37,9 @@ const RequestCameraPermission = async () => {
     );
 
     if (fileWriteAccess === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('You can read storage');
+      smartLog('You can read storage');
     } else {
-      console.log('Not Allowed');
+      smartLog('Not Allowed');
     }
   } catch (err) {
     console.warn(err);
