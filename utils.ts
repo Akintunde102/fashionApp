@@ -269,18 +269,13 @@ export function AndroidFileStorage(
     getAll: (callback?: Function) =>
       new Promise((resolve, reject) =>
         RNFetchBlob.fs
-          .exists(storagePath)
-          .then((exists: boolean) =>
-            exists ? Promise.resolve() : RNFetchBlob.fs.mkdir(storagePath),
-          )
-          .then(() =>
-            RNFetchBlob.fs.ls(storagePath).then((files: string) => {
-              if (callback) {
-                callback(null, files);
-              }
-              resolve(files);
-            }),
-          )
+          .ls(storagePath)
+          .then((files: string) => {
+            if (callback) {
+              callback(null, files);
+            }
+            resolve(files);
+          })
           .catch((error: string) => {
             smartLog('AndroidFileStorage: getAll', error);
             if (callback) {
@@ -292,24 +287,19 @@ export function AndroidFileStorage(
     clear: (callback?: Function) =>
       new Promise((resolve, reject) =>
         RNFetchBlob.fs
-          .exists(storagePath)
-          .then((exists: boolean) =>
-            exists ? Promise.resolve() : RNFetchBlob.fs.mkdir(storagePath),
-          )
-          .then(() =>
-            RNFetchBlob.fs.ls(storagePath).then(async (files: string) => {
-              if (callback) {
-                callback(null, files);
-              }
-              for (let index = 0; index < files.length; index++) {
-                await RNFetchBlob.fs.unlink(`${storagePath}/${files[index]}`);
-                smartLog('removed', files[index], {
-                  file: `${storagePath}/${files[index]}`,
-                });
-              }
-              resolve(true);
-            }),
-          )
+          .ls(storagePath)
+          .then(async (files: string) => {
+            if (callback) {
+              callback(null, files);
+            }
+            for (let index = 0; index < files.length; index++) {
+              await RNFetchBlob.fs.unlink(`${storagePath}/${files[index]}`);
+              smartLog('removed', files[index], {
+                file: `${storagePath}/${files[index]}`,
+              });
+            }
+            resolve(true);
+          })
           .catch((error: string) => {
             if (callback) {
               callback(error);

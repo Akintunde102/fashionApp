@@ -1,6 +1,6 @@
 const config = {
   imageServer: 'obscure-plains-00259.herokuapp.com',
-  log: false,
+  log: true,
   topLog: true,
 };
 

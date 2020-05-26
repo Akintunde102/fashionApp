@@ -144,7 +144,7 @@ function App() {
 
     topLog('InternetState:', internetState !== null && internetState === true);
     // If Internet is On, Run Operation, if Not , Hold On
-    internetState !== null && internetState === true && prepareStorage();
+    internetState !== null && internetState === true && prepareStorage(false);
   }, [internetState, allStored]);
 
   const styles = StyleSheet.create({
@@ -166,21 +166,20 @@ function App() {
       elevation: 5,
     },
     loader: {
-      width: dWidth * 0.5,
+      width: dWidth * 0.7,
       justifyContent: 'center',
       alignContent: 'center',
       alignSelf: 'center',
       alignItems: 'center',
-      backgroundColor: 'rgba(65, 105, 255, 0.9)',
       elevation: 4,
       shadowOffset: {width: 1, height: 19},
       flex: 20,
     },
     loadingText: {
-      fontSize: 10 / fontScale,
       color: 'white',
       textAlign: 'center',
       paddingBottom: 10 / fontScale,
+      fontSize: 14 / fontScale,
     },
     loaderIcon: {
       alignSelf: 'center',
@@ -292,14 +291,23 @@ function App() {
                       paddingLeft: dWidth * 0.1,
                       paddingRight: dWidth * 0.1,
                       paddingTop: dHeight * 0.03,
+                      paddingBottom: dHeight * 0.03,
                       marginTop: dHeight * 0.3,
                       marginBottom: dHeight * 0.3,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      alignContent: 'center',
+                      height: 'auto',
+                      backgroundColor: 'rgba(65, 105, 255, 0.9)',
                     }}>
                     <Text style={styles.loadingText}>
-                      <Text style={{marginBottom: 10, fontStyle: 'italic'}}>
-                        Images Loading
+                      <Text
+                        style={{
+                          fontStyle: 'italic',
+                          fontSize: 20 / fontScale,
+                        }}>
+                        Images Loading {'\n\n'}
                       </Text>
-                      Please Make Sure Your Internet is On
                     </Text>
                     {internetState !== null && internetState === false && (
                       <Text
