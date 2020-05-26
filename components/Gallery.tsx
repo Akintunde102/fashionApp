@@ -49,15 +49,21 @@ const Gallery = ({
   const styles = StyleSheet.create({
     view: {
       fontSize: 40 / fontScale,
+      borderColor: 'red',
+      flexDirection: 'column',
+      flex: 1,
     },
     image: {
-      height: dHeight * 0.76,
-      width: dWidth * 0.9,
+      flex: 15,
+      resizeMode: 'contain',
+      width: dWidth * 1,
       alignSelf: 'center',
     },
     imageContainer: {
       justifyContent: 'center',
       alignContent: 'center',
+      flex: 12,
+      backgroundColor: '#fff',
     },
     text: {
       fontSize: 18 / fontScale,
@@ -68,16 +74,16 @@ const Gallery = ({
       justifyContent: 'center',
       alignContent: 'center',
       backgroundColor: 'royalblue',
-      padding: 10,
+      paddingTop: dHeight * 0.001,
       width: dWidth * 0.5,
-      height: dHeight * 0.08,
     },
     buttonText: {
       color: 'white',
       fontSize: 16 / fontScale,
     },
-    buttons: {
+    buttonContainer: {
       flexDirection: 'row',
+      flex: 1,
     },
   });
 
@@ -182,7 +188,7 @@ const Gallery = ({
   return (
     <View style={{...style, ...styles.view}}>
       {imageCategory === 'allImages' ? (
-        <View style={{flexDirection: 'row'}}>
+        <View style={styles.buttonContainer}>
           <TouchableHighlight
             style={{
               ...styles.button,
@@ -203,7 +209,7 @@ const Gallery = ({
           </TouchableHighlight>
         </View>
       ) : (
-        <View style={{flexDirection: 'row'}}>
+        <View style={styles.buttonContainer}>
           <TouchableHighlight
             style={{
               ...styles.button,
@@ -226,10 +232,10 @@ const Gallery = ({
       )}
 
       <View style={styles.imageContainer}>
-      <Text style={styles.text}>{presentImage.name}</Text>
+          { /** <Text style={styles.text}>{presentImage.name}</Text> **/}
         <Image style={styles.image} source={{uri: presentImage.uri}} />
       </View>
-      <View style={styles.buttons}>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity
           disabled={presentImage.index === 0}
           // eslint-disable-next-line react-native/no-inline-styles

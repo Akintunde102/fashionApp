@@ -68,14 +68,16 @@ function App() {
 
   // to get Image Dict
   useEffect(() => {
-    async function prepareStorage() {
-      const allCleared = await AndroidFileStorage().clear();
-      const keyStorageClear = await keyStorage().clear();
-      topLog({
-        allCleared: allCleared && 'All File Storage is Getting Cleared',
-        keyStorageClear:
-          keyStorageClear && 'All Key Storage is Getting Cleared',
-      });
+    async function prepareStorage(clear: boolean = false) {
+      if (clear) {
+        const allCleared = await AndroidFileStorage().clear();
+        const keyStorageClear = await keyStorage().clear();
+        topLog({
+          allCleared: allCleared && 'All File Storage is Getting Cleared',
+          keyStorageClear:
+            keyStorageClear && 'All Key Storage is Getting Cleared',
+        });
+      }
 
       keyStorage('dictStored')
         .get()
@@ -147,10 +149,10 @@ function App() {
 
   const styles = StyleSheet.create({
     app: {
-      height: dHeight,
-      width: dWidth,
       borderTopColor: '#000',
       borderTopWidth: 1,
+      flexDirection: 'column',
+      height: '100%',
     },
     inputForm: {
       flexDirection: 'row',
@@ -165,12 +167,6 @@ function App() {
     },
     loader: {
       width: dWidth * 0.5,
-      height: dHeight * 0.2,
-      paddingLeft: dWidth * 0.1,
-      paddingRight: dWidth * 0.1,
-      paddingTop: dHeight * 0.03,
-      marginTop: dHeight * 0.3,
-      marginBottom: dHeight * 0.3,
       justifyContent: 'center',
       alignContent: 'center',
       alignSelf: 'center',
@@ -178,6 +174,7 @@ function App() {
       backgroundColor: 'rgba(65, 105, 255, 0.9)',
       elevation: 4,
       shadowOffset: {width: 1, height: 19},
+      flex: 20,
     },
     loadingText: {
       fontSize: 10 / fontScale,
@@ -194,8 +191,6 @@ function App() {
       alignContent: 'center',
       backgroundColor: 'royalblue',
       padding: 10,
-      width: dWidth * 0.5,
-      height: dHeight * 0.08,
     },
     buttonText: {
       color: 'white',
@@ -212,6 +207,7 @@ function App() {
       shadowOpacity: 0.8,
       shadowRadius: 2,
       elevation: 1,
+      flex: 1,
     },
   });
 
@@ -281,7 +277,7 @@ function App() {
             <NavBar page={presentPage} customStyles={styles.navBar} />
             <SizeContextProvider>
               {ready ? (
-                <View>
+                <View style={{flex: 20}}>
                   <Gallery
                     loadSavedImages={loadSavedImages}
                     loadAllImages={loadAllImages}
@@ -291,24 +287,32 @@ function App() {
                 </View>
               ) : (
                 <View style={styles.loader}>
-                  <Text style={styles.loadingText}>
-                    <Text style={{marginBottom: 10, fontStyle: 'italic'}}>
-                      {' '}
-                      Images Loading{' '}
-                    </Text>{' '}
-                    Please Make Sure Your Internet is On
-                  </Text>
-                  {internetState !== null && internetState === false && (
-                    <Text
-                      style={{
-                        ...styles.loadingText,
-                        color: 'red',
-                      }}>
-                      Please Turn On Your Internet
+                  <View
+                    style={{
+                      paddingLeft: dWidth * 0.1,
+                      paddingRight: dWidth * 0.1,
+                      paddingTop: dHeight * 0.03,
+                      marginTop: dHeight * 0.3,
+                      marginBottom: dHeight * 0.3,
+                    }}>
+                    <Text style={styles.loadingText}>
+                      <Text style={{marginBottom: 10, fontStyle: 'italic'}}>
+                        Images Loading
+                      </Text>
+                      Please Make Sure Your Internet is On
                     </Text>
-                  )}
-                  <View style={styles.loaderIcon}>
-                    <CirclesLoader />
+                    {internetState !== null && internetState === false && (
+                      <Text
+                        style={{
+                          ...styles.loadingText,
+                          color: 'red',
+                        }}>
+                        Please Turn On Your Internet
+                      </Text>
+                    )}
+                    <View style={styles.loaderIcon}>
+                      <CirclesLoader />
+                    </View>
                   </View>
                 </View>
               )}
