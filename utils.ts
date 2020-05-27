@@ -1,7 +1,7 @@
 import {useRef, useEffect} from 'react';
 import {PermissionsAndroid, Alert} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import RNFetchBlob from 'react-native-fetch-blob';
+import RNFetchBlob from 'rn-fetch-blob';
 import config from './config';
 import credentials from './app.credentials';
 
