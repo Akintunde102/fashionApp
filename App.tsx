@@ -178,7 +178,6 @@ function App() {
     loadingText: {
       color: 'white',
       textAlign: 'center',
-      paddingBottom: 10 / fontScale,
       fontSize: 14 / fontScale,
     },
     loaderIcon: {
@@ -263,6 +262,8 @@ function App() {
       });
   };
 
+  smartLog({allStored});
+
   return (
     <>
       <StatusBar
@@ -298,15 +299,15 @@ function App() {
                       justifyContent: 'center',
                       alignContent: 'center',
                       height: 'auto',
-                      backgroundColor: 'rgba(65, 105, 255, 0.9)',
+                      backgroundColor: '#002366',
                     }}>
                     <Text style={styles.loadingText}>
                       <Text
                         style={{
                           fontStyle: 'italic',
-                          fontSize: 20 / fontScale,
+                          fontSize: 10 / fontScale,
                         }}>
-                        Images Loading {'\n\n'}
+                        Images Loading {'\n'}
                       </Text>
                     </Text>
                     {internetState !== null && internetState === false && (

@@ -1,4 +1,4 @@
-const appName = 'Naija Styles';
+const appName = 'Naija Fashion Styles';
 const author = 'Akintunde Jegede';
 
 export default {
