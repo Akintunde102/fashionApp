@@ -25,6 +25,7 @@
     "react-native-image-preview": "^0.3.1",
     "react-native-keyboard-aware-scroll-view": "^0.6.0",
     "react-native-masonry-list": "^2.16.1",
+    "react-native-photo-view": "^1.5.2",
     "react-native-responsive-screen": "^1.4.1",
     "react-native-spinkit": "^1.5.0",
     "react-native-splash-screen": "^3.2.0",

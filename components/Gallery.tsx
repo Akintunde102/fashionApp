@@ -10,8 +10,10 @@ import {
   TouchableHighlight,
   ToastAndroid,
 } from 'react-native';
+import PhotoView from 'react-native-photo-view';
 import {SizeContext} from '../contexts';
 import {smartLog, AndroidFileStorage, getUnique} from '../utils';
+import {number} from 'prop-types';
 
 type ImageDetailsType = {uri: string; name: string};
 const Gallery = ({
@@ -40,6 +42,10 @@ const Gallery = ({
     index: 0,
     oUri: firstImage.uri,
   });
+  const [actualDimension, setActualDimension] = useState<{
+    aHeight: number;
+    aWidth: number;
+  } | null>(null);
 
   useEffect(() => {
     setImages(imageDetails.images);
@@ -53,7 +59,7 @@ const Gallery = ({
       flexDirection: 'column',
       flex: 1,
     },
-    image: {
+    image: { 
       flex: 15,
       resizeMode: 'contain',
       width: dWidth * 1,
@@ -87,7 +93,7 @@ const Gallery = ({
     },
   });
 
-  const processPresentImage = (newIndex: number, newImages) => {
+  const processPresentImage = (newIndex: number, newImages = null) => {
     const newImage = newImages ? newImages[newIndex] : images[newIndex];
 
     AndroidFileStorage(newImage.name)
@@ -105,6 +111,14 @@ const Gallery = ({
           index: newIndex,
           oUri: newImage.uri,
         });
+
+        Image.getSize(
+          preferredUri,
+          (width, height) => {
+            setActualDimension({aWidth: width, aHeight: height});
+          },
+          (error) => smartLog(error),
+        );
       });
   };
 
@@ -232,8 +246,19 @@ const Gallery = ({
       )}
 
       <View style={styles.imageContainer}>
-          { /** <Text style={styles.text}>{presentImage.name}</Text> **/}
-        <Image style={styles.image} source={{uri: presentImage.uri}} />
+        {/** <Text style={styles.text}>{presentImage.name}</Text>
+         *  <Image style={styles.image} source={{uri: presentImage.uri}} />
+         **/}
+
+
+        <PhotoView
+          source={{uri: presentImage.uri}}
+          minimumZoomScale={0.5}
+          maximumZoomScale={3}
+          androidScaleType="fitCenter"
+          onLoad={() => smartLog('Image loaded!', actualDimension)}
+          style={styles.image}
+        />
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
