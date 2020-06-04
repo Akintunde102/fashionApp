@@ -261,9 +261,7 @@ function App() {
         smartLog('loadAllImages:: err', {error});
       });
   };
-
-  smartLog({allStored});
-
+  
   return (
     <>
       <StatusBar

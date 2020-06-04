@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useContext, useState, useEffect, memo} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -11,9 +11,11 @@ import {
   ToastAndroid,
 } from 'react-native';
 import PhotoView from 'react-native-photo-view';
+import GestureRecognizer from 'react-native-swipe-gestures';
+import {createImageProgress} from 'react-native-image-progress';
+import * as Progress from 'react-native-progress';
 import {SizeContext} from '../contexts';
 import {smartLog, AndroidFileStorage, getUnique} from '../utils';
-import {number} from 'prop-types';
 
 type ImageDetailsType = {uri: string; name: string};
 const Gallery = ({
@@ -31,6 +33,8 @@ const Gallery = ({
   // Contexts
   const {fontScale, dHeight, dWidth} = useContext(SizeContext);
 
+  const ProgressiveImage = createImageProgress(PhotoView);
+
   // States
   const [images, setImages] = useState(onlyImages);
   const firstImage = imageDetails.images[0];
@@ -47,11 +51,18 @@ const Gallery = ({
     aWidth: number;
   } | null>(null);
 
+  // Swipe Config
+  const swipeConfig = {
+    velocityThreshold: 0.3,
+    directionalOffsetThreshold: 80
+  };
+
   useEffect(() => {
     setImages(imageDetails.images);
     processPresentImage(0, imageDetails.images);
   }, [imageDetails]);
 
+  // STyles
   const styles = StyleSheet.create({
     view: {
       fontSize: 40 / fontScale,
@@ -189,6 +200,13 @@ const Gallery = ({
   };
 
   const onPress = (direction: 'next' | 'previous') => {
+    if (
+      (direction === 'previous' && presentImage.index === 0) ||
+      (direction === 'next' && presentImage.index === images.length - 1)
+    ) {
+      smartLog('You Hit A Wall');
+      return;
+    }
     const newIndex =
       direction === 'next' ? presentImage.index + 1 : presentImage.index - 1;
     smartLog({newIndex, length: images.length});
@@ -250,15 +268,42 @@ const Gallery = ({
          *  <Image style={styles.image} source={{uri: presentImage.uri}} />
          **/}
 
-
-        <PhotoView
-          source={{uri: presentImage.uri}}
-          minimumZoomScale={0.5}
-          maximumZoomScale={3}
-          androidScaleType="fitCenter"
-          onLoad={() => smartLog('Image loaded!', actualDimension)}
-          style={styles.image}
-        />
+        <GestureRecognizer
+          onSwipe={(direction, state) => smartLog(direction, state)}
+          onSwipeUp={(state) => {
+            onPress('previous');
+            smartLog(state);
+          }}
+          onSwipeDown={(state) => {
+            onPress('next');
+            smartLog(state);
+          }}
+          onSwipeLeft={(state) => {
+            onPress('next');
+            smartLog(state);
+          }}
+          onSwipeRight={(state) => {
+            onPress('previous');
+            smartLog(state);
+          }}
+          config={swipeConfig}
+          style={styles.imageContainer}>
+          <ProgressiveImage
+            source={{uri: presentImage.uri}}
+            minimumZoomScale={0.5}
+            maximumZoomScale={3}
+            androidScaleType="fitCenter"
+            onLoad={() => smartLog('Image loaded!', actualDimension)}
+            style={styles.image}
+            indicator={Progress.Pie}
+            indicatorProps={{
+              size: 80,
+              borderWidth: 0,
+              color: 'rgba(150, 150, 150, 1)',
+              unfilledColor: 'rgba(200, 200, 200, 0.2)'
+            }}
+          />
+        </GestureRecognizer>
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
